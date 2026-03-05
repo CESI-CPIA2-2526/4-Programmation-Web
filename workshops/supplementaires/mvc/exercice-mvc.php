@@ -30,43 +30,7 @@
 //  │   ├── stats.php                   ← Page de statistiques
 //  │   └── 404.php                     ← Page d'erreur
 //  └── uploads/                        ← Dossier pour les CV déposés
-//
-//  RÈGLES À RESPECTER
-//  ------------------
-//  Model  (OffreModel.php)
-//    ✔  Contient le tableau $offres et toutes les méthodes de
-//       traitement (filtrage, statistiques, recherche par id…)
-//    ✔  Retourne des valeurs — ne fait JAMAIS de echo ni de HTML
-//    ✗  N'accède pas à $_GET / $_POST / $_SESSION
-//
-//  Controller  (OffreController.php / CandidatureController.php / StatsController.php)
-//    ✔  Lit $_GET, $_POST, $_SERVER, $_SESSION
-//    ✔  Instancie le Model et appelle ses méthodes
-//    ✔  Prépare les variables à transmettre à la View
-//    ✔  Inclut la bonne View avec require_once
-//    ✗  Ne fait JAMAIS de echo HTML
-//    ✗  Ne contient pas de logique métier (calculs, filtres…)
-//
-//  View  (views/*.php)
-//    ✔  Reçoit des variables prêtes à l'emploi du Controller
-//    ✔  Génère le HTML (foreach, if, echo / <?= … ?>)
-//    ✗  N'instancie pas le Model, ne fait aucun calcul métier
-//    ✗  N'accède pas à $_GET / $_POST
-//
-//  index.php
-//    ✔  Lance session_start()
-//    ✔  Lit $_GET['vue'] et inclut le bon Controller
-//    ✔  Reste aussi court que possible (< 15 lignes)
-//
-//  CONSEILS
-//  --------
-//  1. Identifiez les 4 zones balisées ci-dessous dans le fichier :
-//       DONNÉES  /  CONTROLLER  /  MODÈLE  /  AFFICHAGE
-//  2. Commencez par créer OffreModel.php (classe avec les données
-//     et les méthodes), puis les Controllers, puis les Views.
-//  3. Testez après chaque étape pour vérifier que l'application
-//     se comporte exactement comme avant la refactorisation.
-//
+
 // ============================================================
 
 session_start();
