@@ -122,7 +122,7 @@ style: |
 
 <!-- _class: title -->
 
-# PDO — PHP Data Objects
+# PDO : PHP Data Objects
 
 ## Connexion, requêtes préparées, sécurité
 
@@ -133,21 +133,21 @@ style: |
 **PDO** est l'extension PHP standard pour communiquer avec une base de données.
 
 ```text
-PHP (PDO)  ──(requête SQL)──▶  Base de données
-                                    │  MySQL
-           ◀──(résultats)──         │  PostgreSQL
-                                    │  SQLite
+PHP (PDO)  --(requête SQL)-->  Base de données
+                                   | MySQL
+           <--(résultats)--        | PostgreSQL
+                                   | SQLite
 ```
 
 - **Une seule API** pour tous les systèmes de bases de données
-- Protection native contre les **injections SQL** (requêtes préparées)
+- Protection native contre les **injections SQL** via les requêtes préparées
 - Gestion des erreurs via les **exceptions**
 
 | | PDO | mysqli |
 |--|-----|--------|
-| Multi-SGBD | ✅ | ❌ MySQL uniquement |
-| Requêtes préparées | ✅ | ✅ |
-| API orientée objet | ✅ | ✅ |
+| Multi-SGBD | Oui | Non (MySQL uniquement) |
+| Requêtes préparées | Oui | Oui |
+| API orientée objet | Oui | Oui |
 
 > **PDO est la méthode recommandée** pour tout nouveau projet PHP.
 
@@ -180,13 +180,13 @@ try {
 ```
 
 > Les options définissent le comportement global :
-> - `ERRMODE_EXCEPTION` → les erreurs lèvent une exception
-> - `FETCH_ASSOC` → résultats sous forme de tableaux associatifs
-> - `EMULATE_PREPARES false` → vraies requêtes préparées côté serveur
+> - `ERRMODE_EXCEPTION` : les erreurs lèvent une exception
+> - `FETCH_ASSOC` : résultats sous forme de tableaux associatifs
+> - `EMULATE_PREPARES false` : vraies requêtes préparées côté serveur
 
 ---
 
-# Classe Database — connexion unique
+# Classe Database : connexion unique
 
 Centraliser la connexion dans une classe évite de la répéter partout.
 
@@ -220,12 +220,12 @@ $pdo = Database::getConnection();
 
 ---
 
-# SELECT — récupérer des données
+# SELECT : récupérer des données
 
 <div class="columns">
 <div>
 
-**`fetchAll()` — toutes les lignes**
+**`fetchAll()` : toutes les lignes**
 
 ```php
 $stmt = $pdo->query("SELECT * FROM produits");
@@ -239,12 +239,12 @@ foreach ($produits as $produit) {
 ```
 
 Retourne un tableau de toutes les lignes.
-À utiliser pour afficher une liste.
+A utiliser pour afficher une liste.
 
 </div>
 <div>
 
-**`fetch()` — une seule ligne**
+**`fetch()` : une seule ligne**
 
 ```php
 $stmt = $pdo->query(
@@ -261,7 +261,7 @@ if ($produit) {
 ```
 
 Retourne la prochaine ligne, ou `false`.
-À utiliser pour récupérer un enregistrement.
+A utiliser pour récupérer un enregistrement.
 
 </div>
 </div>
@@ -271,14 +271,14 @@ Retourne la prochaine ligne, ou `false`.
 
 ---
 
-# Requête préparée — pourquoi ?
+# Requête préparée : pourquoi ?
 
 Sans requête préparée, une variable malveillante peut **modifier la requête SQL**.
 
 <div class="columns">
 <div>
 
-**Sans préparation — dangereux**
+**Sans préparation : dangereux**
 
 ```php
 // L'utilisateur saisit :
@@ -292,13 +292,13 @@ $stmt = $pdo->query(
 // Requête exécutée :
 // SELECT * FROM users
 // WHERE id = '' OR '1'='1'
-// → retourne TOUS les utilisateurs !
+// Retourne TOUS les utilisateurs !
 ```
 
 </div>
 <div>
 
-**Avec requête préparée — sécurisé**
+**Avec requête préparée : sécurisé**
 
 ```php
 $id = $_GET['id'];
@@ -369,7 +369,7 @@ Plus court, mais l'ordre des valeurs doit correspondre à l'ordre des `?`.
 
 ---
 
-# INSERT — insérer des données
+# INSERT : insérer des données
 
 ```php
 <?php
@@ -400,7 +400,7 @@ echo "Produit créé avec l'ID : $nouvelId";
 <div class="columns">
 <div>
 
-**UPDATE — modifier**
+**UPDATE : modifier**
 
 ```php
 $stmt = $pdo->prepare(
@@ -424,7 +424,7 @@ echo "$nbModifies ligne(s) mise(s) à jour.";
 </div>
 <div>
 
-**DELETE — supprimer**
+**DELETE : supprimer**
 
 ```php
 $stmt = $pdo->prepare(
@@ -457,7 +457,7 @@ Le mode de fetch détermine **sous quelle forme** les données sont retournées.
 
 | Mode | Résultat | Usage |
 |------|----------|-------|
-| `PDO::FETCH_ASSOC` | Tableau associatif | Par défaut — recommandé |
+| `PDO::FETCH_ASSOC` | Tableau associatif | Par défaut, recommandé |
 | `PDO::FETCH_OBJ` | Objet `stdClass` | Accès via `->propriété` |
 | `PDO::FETCH_CLASS` | Instance d'une classe | Architecture MVC |
 | `PDO::FETCH_NUM` | Tableau indexé | Rarement utile |
@@ -467,18 +467,18 @@ Le mode de fetch détermine **sous quelle forme** les données sont retournées.
 $produit = $stmt->fetch();
 echo $produit['nom'];
 
-// FETCH_OBJ — pour cette requête uniquement
+// FETCH_OBJ pour cette requête uniquement
 $produit = $stmt->fetch(PDO::FETCH_OBJ);
 echo $produit->nom;
 
-// FETCH_CLASS — hydrate directement un objet Produit
+// FETCH_CLASS hydrate directement un objet Produit
 $stmt->setFetchMode(PDO::FETCH_CLASS, 'Produit');
 $produit = $stmt->fetch(); // instance de Produit
 ```
 
 ---
 
-# FETCH_CLASS — hydratation automatique
+# FETCH_CLASS : hydratation automatique
 
 ```php
 <?php
@@ -494,8 +494,8 @@ class Produit {
     }
 
     public function afficher(): string {
-        return "{$this->nom} — {$this->prix} €"
-             . ($this->estDisponible() ? " ✓" : " épuisé");
+        $statut = $this->estDisponible() ? 'disponible' : 'épuisé';
+        return "{$this->nom} - {$this->prix} EUR ({$statut})";
     }
 }
 
@@ -540,7 +540,7 @@ try {
 
 } catch (PDOException $e) {
     $pdo->rollBack(); // annuler tout en cas d'erreur
-    echo "Erreur — virement annulé : " . $e->getMessage();
+    echo "Erreur, virement annulé : " . $e->getMessage();
 }
 ```
 
@@ -617,18 +617,18 @@ class ProduitModel {
 
 ---
 
-# À retenir
+# A retenir
 
 1. Toujours passer les options `ERRMODE_EXCEPTION`, `FETCH_ASSOC`, `EMULATE_PREPARES false` à la connexion
-2. **Jamais** de variable directement dans une requête SQL → utiliser `prepare` + `execute`
+2. **Jamais** de variable directement dans une requête SQL : utiliser `prepare` + `execute`
 3. `query()` uniquement pour les requêtes **sans paramètres**
 4. `fetch()` pour une ligne, `fetchAll()` pour toutes les lignes
-5. `lastInsertId()` après un `INSERT`, `rowCount()` après un `UPDATE` / `DELETE`
+5. `lastInsertId()` après un `INSERT`, `rowCount()` après un `UPDATE` ou `DELETE`
 6. Entourer les opérations critiques d'une **transaction** (`beginTransaction` / `commit` / `rollBack`)
 7. Ne jamais afficher `$e->getMessage()` en production
 
 **La règle d'or :**
-> Une requête préparée = données séparées de la structure SQL = protection contre les injections.
+> Une requête préparée sépare les données de la structure SQL et protège contre les injections.
 
 ---
 
