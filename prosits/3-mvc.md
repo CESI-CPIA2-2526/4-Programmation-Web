@@ -1,6 +1,19 @@
 # Boucle PBL : MVC - Composer - Moteur de template
 
-**Type :** Prosit / Workshop
+**Type :** Prosit / Workshop — **Thème :** Architecture MVC, Composer, moteur de template Twig
+
+**Votre mission :** Restructurer l'application Web4all — jusqu'ici monolithique — en architecture MVC avec Composer pour gérer les dépendances et Twig pour les vues, afin de séparer clairement les responsabilités et factoriser les fragments HTML (header, footer).
+
+**Livrables :**
+
+| Livrable | Ce qu'on attend |
+|----------|-----------------|
+| Structure MVC | Arborescence `controllers/`, `models/`, `views/` respectant les règles de chaque couche |
+| Configuration Composer | `composer.json` avec Twig, autoloading, dossier `vendor/` |
+| Vues Twig | Templates `.html.twig` avec héritage (`extends`, `block`) pour factoriser header/footer |
+| Fonctionnalités | Pages "Postuler à une offre" et "Liste des entreprises" restructurées en MVC + Twig |
+
+---
 
 ## Objectifs d'apprentissage
 

@@ -1,5 +1,17 @@
 # Workshop 2 - PHP
 
+**Type :** Workshop — **Thème :** PHP - Upload sécurisé, pagination dynamique, validation
+
+**Votre mission :** Réaliser 3 exercices pratiques de sécurisation et de structuration d'une application PHP : téléversement de fichiers avec validation, système de pagination, et fonction de validation réutilisable.
+
+**À produire :**
+
+| Exercice | Fichiers à créer |
+|----------|-----------------|
+| 1 — Upload sécurisé | `upload.html`, `upload.php`, dossier `uploads/` |
+| 2 — Pagination | `pagination.php` avec navigation entre les pages |
+| 3 — Validation | Fonction `validateInput()` intégrée aux deux fichiers précédents |
+
 ---
 
 ## Exercice 1 : Televersement securise de fichiers

@@ -1,5 +1,19 @@
 # Prosit 2 - PHP : Formulaires, Pagination et POO
 
+**Type :** Prosit — **Thème :** PHP dynamique, formulaires, upload sécurisé, pagination, POO
+
+**Votre mission :** Dynamiser deux pages de l'application Web4all — la page *Postuler à une offre* (téléversement sécurisé du CV) et la page *Liste des entreprises* (pagination) — en appliquant les principes de la POO et de la sécurité côté serveur.
+
+**Livrables :**
+
+| Livrable | Ce qu'on attend |
+|----------|-----------------|
+| Formulaire d'upload | Page "Postuler à une offre" avec téléversement du CV |
+| Classe `Upload` | Validation MIME, taille (2 Mo max), déplacement du fichier |
+| Pagination | Affichage de 10 entreprises par page avec navigation |
+| Classe `Pagination` | Découpage du tableau + génération des liens de navigation |
+| Sécurité | Validation serveur, `htmlspecialchars()` sur toutes les sorties |
+
 ---
 
 ## Objectifs d'apprentissage

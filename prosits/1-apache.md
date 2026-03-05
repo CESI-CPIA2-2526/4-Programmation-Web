@@ -1,5 +1,18 @@
 # Prosit 1 - Apache et HTTP
 
+**Type :** Prosit — **Thème :** Serveur Apache, protocole HTTP, hôtes virtuels, HTTPS
+
+**Votre mission :** Mettre en place un environnement de développement local complet sous Apache — hôtes virtuels, logs, redirections `.htaccess`, certificat HTTPS — et maîtriser le diagnostic des échanges HTTP avec les outils de développement du navigateur.
+
+**Livrables :**
+
+| Livrable | Ce qu'on attend |
+|----------|-----------------|
+| Configuration Apache | Fichiers vhosts pour `cesi-site.local` et `cesi-static.local` |
+| Migration frontend | Déploiement complet des fichiers statiques sur le serveur |
+| Documentation | Capture et analyse de requêtes HTTP avec les DevTools |
+| HTTPS local | Certificat SSL configuré pour le développement local |
+
 ---
 
 ## Contexte
