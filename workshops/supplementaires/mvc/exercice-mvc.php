@@ -28,22 +28,12 @@
 //  ├── models/
 //  │   └── OffreModel.php
 //  ├── views/
-<<<<<<< HEAD
-//  │   ├── liste.php
-//  │   ├── detail.php
-//  │   ├── candidatures.php
-//  │   ├── stats.php
-//  │   └── 404.php
-//  └── uploads/
-//
-=======
 //  │   ├── liste.php                   ← Affichage de la liste filtrée
 //  │   ├── detail.php                  ← Détail d'une offre + formulaire
 //  │   ├── candidatures.php            ← Historique des candidatures
 //  │   ├── stats.php                   ← Page de statistiques
 //  │   └── 404.php                     ← Page d'erreur
 
->>>>>>> bcdce6c09e42027aa5ca443984d2bfd2bc9b662f
 // ============================================================
 
 
