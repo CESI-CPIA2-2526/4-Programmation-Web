@@ -12,31 +12,105 @@
 //
 //  VOTRE MISSION
 //  -------------
-//  Répartir ce code dans une architecture MVC en respectant la
-//  structure de fichiers suivante :
+//  Pour chaque extrait ci-dessous, remplissez les deux lignes :
+//
+//   Étape 1 — Identifiez la couche MVC :
+//             Modèle  /  Vue  /  Contrôleur
+//
+//   Étape 2 — Identifiez le fichier exact de destination :
 //
 //  web4all/
-//  ├── index.php                       ← Point d'entrée unique (routeur)
+//  ├── index.php
 //  ├── controllers/
-//  │   ├── OffreController.php         ← Requêtes GET/POST liées aux offres
-//  │   ├── CandidatureController.php   ← Historique des candidatures
-//  │   └── StatsController.php         ← Statistiques
+//  │   ├── OffreController.php
+//  │   ├── CandidatureController.php
+//  │   └── StatsController.php
 //  ├── models/
-//  │   └── OffreModel.php              ← Données + logique métier
+//  │   └── OffreModel.php
 //  ├── views/
-//  │   ├── liste.php                   ← Affichage de la liste filtrée
-//  │   ├── detail.php                  ← Détail d'une offre + formulaire
-//  │   ├── candidatures.php            ← Historique des candidatures
-//  │   ├── stats.php                   ← Page de statistiques
-//  │   └── 404.php                     ← Page d'erreur
-//  └── uploads/                        ← Dossier pour les CV déposés
-
+//  │   ├── liste.php
+//  │   ├── detail.php
+//  │   ├── candidatures.php
+//  │   ├── stats.php
+//  │   └── 404.php
+//  └── uploads/
+//
 // ============================================================
 
-session_start();
 
 // ============================================================
-//  DONNÉES : liste des offres d'emploi
+//  EXTRAIT C
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
+// ============================================================
+
+$nb_total    = count($offres);
+$nb_ouvertes = 0;
+$salaire_sum = 0;
+foreach ($offres as $o) {
+    if ($o['ouvert']) {
+        $nb_ouvertes++;
+        $salaire_sum += $o['salaire'];
+    }
+}
+$salaire_moyen = $nb_ouvertes > 0 ? round($salaire_sum / $nb_ouvertes) : 0;
+
+$par_type = [];
+foreach ($offres as $o) {
+    $par_type[$o['type']] = ($par_type[$o['type']] ?? 0) + 1;
+}
+
+$par_ville = [];
+foreach ($offres as $o) {
+    $par_ville[$o['ville']] = ($par_ville[$o['ville']] ?? 0) + 1;
+}
+
+$salaires = array_column($offres, 'salaire');
+$sal_min  = min($salaires);
+$sal_max  = max($salaires);
+
+
+// ============================================================
+//  EXTRAIT H
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
+// ============================================================
+?>
+
+    <h2>Mes candidatures (session en cours)</h2>
+
+    <?php if (empty($historique)): ?>
+        <p>Vous n'avez pas encore envoyé de candidature durant cette session.</p>
+        <a class="btn" href="?vue=liste">Voir les offres</a>
+    <?php else: ?>
+        <table>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Offre #</th>
+                <th>CV</th>
+                <th>Date</th>
+            </tr>
+            <?php foreach ($historique as $c): ?>
+                <tr>
+                    <td><?= htmlspecialchars($c['nom']) ?></td>
+                    <td><?= htmlspecialchars($c['email']) ?></td>
+                    <td><?= (int) $c['offre_id'] ?></td>
+                    <td><?= htmlspecialchars($c['cv'] ?? '—') ?></td>
+                    <td><?= htmlspecialchars($c['date']) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
+
+<?php
+// ============================================================
+//  EXTRAIT A
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
 // ============================================================
 
 $offres = [
@@ -140,7 +214,78 @@ $offres = [
 
 
 // ============================================================
-//  CONTROLLER : lecture de la requête POST et orchestration
+//  EXTRAIT F
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
+// ============================================================
+?>
+
+    <h2>Statistiques des offres</h2>
+
+    <div class="stats">
+        <div class="stat-box">
+            <strong><?= number_format($sal_min, 0, ',', ' ') ?> €</strong>
+            salaire le plus bas
+        </div>
+        <div class="stat-box">
+            <strong><?= number_format($sal_max, 0, ',', ' ') ?> €</strong>
+            salaire le plus haut
+        </div>
+        <div class="stat-box">
+            <strong><?= number_format($salaire_moyen, 0, ',', ' ') ?> €</strong>
+            salaire moyen (ouvertes)
+        </div>
+    </div>
+
+    <div style="display:flex; gap:20px;">
+        <div style="flex:1; background:white; padding:20px; border-radius:8px;">
+            <h3>Répartition par type de contrat</h3>
+            <table>
+                <tr><th>Type</th><th>Nombre</th></tr>
+                <?php foreach ($par_type as $type => $nb): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($type) ?></td>
+                        <td><?= $nb ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+        <div style="flex:1; background:white; padding:20px; border-radius:8px;">
+            <h3>Répartition par ville</h3>
+            <table>
+                <tr><th>Ville</th><th>Nombre</th></tr>
+                <?php foreach ($par_ville as $ville => $nb): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($ville) ?></td>
+                        <td><?= $nb ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+    </div>
+
+<?php
+// ============================================================
+//  EXTRAIT I
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
+// ============================================================
+
+session_start();
+
+$filtre_type  = $_GET['type']  ?? '';
+$filtre_ville = $_GET['ville'] ?? '';
+$vue          = $_GET['vue']   ?? 'liste';
+$offre_id_url = (int) ($_GET['id'] ?? 0);
+
+
+// ============================================================
+//  EXTRAIT B
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
 // ============================================================
 
 $erreurs        = [];
@@ -195,20 +340,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 
 // ============================================================
-//  CONTROLLER : lecture des paramètres GET et routage
+//  EXTRAIT G
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
 // ============================================================
 
-$filtre_type  = $_GET['type']  ?? '';
-$filtre_ville = $_GET['ville'] ?? '';
-$vue          = $_GET['vue']   ?? 'liste';
-$offre_id_url = (int) ($_GET['id'] ?? 0);
-
-
-// ============================================================
-//  MODÈLE : filtrage, statistiques, préparation des données
-// ============================================================
-
-// Filtrage du tableau d'offres
 $offres_filtrees = [];
 foreach ($offres as $offre) {
     if ($filtre_type !== '' && $offre['type'] !== $filtre_type) {
@@ -220,19 +357,6 @@ foreach ($offres as $offre) {
     $offres_filtrees[] = $offre;
 }
 
-// Statistiques globales
-$nb_total    = count($offres);
-$nb_ouvertes = 0;
-$salaire_sum = 0;
-foreach ($offres as $o) {
-    if ($o['ouvert']) {
-        $nb_ouvertes++;
-        $salaire_sum += $o['salaire'];
-    }
-}
-$salaire_moyen = $nb_ouvertes > 0 ? round($salaire_sum / $nb_ouvertes) : 0;
-
-// Récupération du détail d'une offre
 $offre_detail = null;
 if ($vue === 'detail' && $offre_id_url > 0) {
     foreach ($offres as $o) {
@@ -243,111 +367,21 @@ if ($vue === 'detail' && $offre_id_url > 0) {
     }
 }
 
-// Listes pour les menus déroulants de filtres
 $types_dispo  = array_unique(array_column($offres, 'type'));
 $villes_dispo = array_unique(array_column($offres, 'ville'));
 sort($types_dispo);
 sort($villes_dispo);
 
-// Répartition par type de contrat (pour la page stats)
-$par_type = [];
-foreach ($offres as $o) {
-    $par_type[$o['type']] = ($par_type[$o['type']] ?? 0) + 1;
-}
-
-// Répartition par ville
-$par_ville = [];
-foreach ($offres as $o) {
-    $par_ville[$o['ville']] = ($par_ville[$o['ville']] ?? 0) + 1;
-}
-
-// Salaire min / max
-$salaires = array_column($offres, 'salaire');
-$sal_min  = min($salaires);
-$sal_max  = max($salaires);
-
-// Historique des candidatures de la session en cours
 $historique = $_SESSION['candidatures'] ?? [];
 
 
 // ============================================================
-//  AFFICHAGE
+//  EXTRAIT D
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
 // ============================================================
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Offres d'emploi — Web4all</title>
-    <style>
-        body        { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; color: #333; }
-        header      { background: #2c3e50; color: white; padding: 20px 40px; }
-        header h1   { margin: 0; font-size: 24px; }
-        nav         { background: #34495e; padding: 10px 40px; }
-        nav a       { color: #ecf0f1; text-decoration: none; margin-right: 20px; font-size: 14px; }
-        nav a:hover { text-decoration: underline; }
-        main        { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-        .stats      { display: flex; gap: 20px; margin-bottom: 30px; }
-        .stat-box   { background: white; padding: 15px 25px; border-radius: 8px;
-                      border-left: 4px solid #3498db; flex: 1; text-align: center; }
-        .stat-box strong { display: block; font-size: 28px; color: #2c3e50; }
-        .filtres    { background: white; padding: 15px 20px; border-radius: 8px;
-                      margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
-        .filtres select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        .filtres button { padding: 8px 16px; background: #3498db; color: white;
-                          border: none; border-radius: 4px; cursor: pointer; }
-        .card       { background: white; padding: 20px; border-radius: 8px;
-                      margin-bottom: 15px; border-left: 4px solid #ecf0f1; }
-        .card h2    { margin: 0 0 8px; font-size: 18px; color: #2c3e50; }
-        .badge      { display: inline-block; padding: 3px 10px; border-radius: 12px;
-                      font-size: 12px; font-weight: bold; margin-right: 6px; }
-        .badge-cdi  { background: #d5f5e3; color: #1e8449; }
-        .badge-cdd  { background: #fdebd0; color: #ca6f1e; }
-        .badge-open { background: #d5f5e3; color: #1e8449; }
-        .badge-clos { background: #fadbd8; color: #922b21; }
-        .btn        { display: inline-block; padding: 8px 18px; background: #3498db;
-                      color: white; border-radius: 4px; text-decoration: none;
-                      font-size: 14px; border: none; cursor: pointer; }
-        .btn:hover  { background: #2980b9; }
-        .detail     { background: white; padding: 30px; border-radius: 8px; }
-        .detail h2  { color: #2c3e50; margin-top: 0; }
-        .competence { display: inline-block; background: #eaf4fb; color: #1a5276;
-                      padding: 4px 12px; border-radius: 12px; font-size: 13px; margin: 3px; }
-        form        { background: white; padding: 25px; border-radius: 8px; margin-top: 25px; }
-        form h3     { margin-top: 0; color: #2c3e50; }
-        .form-group { margin-bottom: 16px; }
-        label       { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input[type=text], input[type=email], textarea {
-            width: 100%; padding: 10px; border: 1px solid #ddd;
-            border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        textarea    { height: 120px; resize: vertical; }
-        .erreur     { background: #fadbd8; border-left: 4px solid #e74c3c;
-                      padding: 12px 16px; border-radius: 4px; margin-bottom: 20px; }
-        .erreur li  { color: #922b21; margin: 4px 0; }
-        .succes     { background: #d5f5e3; border-left: 4px solid #27ae60;
-                      padding: 12px 16px; border-radius: 4px; margin-bottom: 20px;
-                      color: #1e8449; font-weight: bold; }
-        table       { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th          { background: #2c3e50; color: white; padding: 10px; text-align: left; }
-        td          { padding: 9px 10px; border-bottom: 1px solid #ecf0f1; }
-        tr:nth-child(even) td { background: #f9f9f9; }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>Web4all — Espace Offres</h1>
-</header>
-
-<nav>
-    <a href="?vue=liste">Toutes les offres</a>
-    <a href="?vue=candidatures">Mes candidatures</a>
-    <a href="?vue=stats">Statistiques</a>
-</nav>
-
-<main>
-
-<?php if ($vue === 'liste'): ?>
 
     <!-- Statistiques rapides -->
     <div class="stats">
@@ -424,8 +458,25 @@ $historique = $_SESSION['candidatures'] ?? [];
         <p>Aucune offre ne correspond à vos critères.</p>
     <?php endif; ?>
 
+<?php
+// ============================================================
+//  EXTRAIT J
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
+// ============================================================
+?>
 
-<?php elseif ($vue === 'detail' && $offre_detail !== null): ?>
+    <p>Page introuvable. <a href="?vue=liste">Retour aux offres</a></p>
+
+<?php
+// ============================================================
+//  EXTRAIT E
+//
+//  Couche MVC    : ________________________________
+//  Fichier       : ________________________________
+// ============================================================
+?>
 
     <a href="?vue=liste">← Retour aux offres</a>
 
@@ -500,89 +551,3 @@ $historique = $_SESSION['candidatures'] ?? [];
             Cette offre est fermée, les candidatures ne sont plus acceptées.
         </p>
     <?php endif; ?>
-
-
-<?php elseif ($vue === 'stats'): ?>
-
-    <h2>Statistiques des offres</h2>
-
-    <div class="stats">
-        <div class="stat-box">
-            <strong><?= number_format($sal_min, 0, ',', ' ') ?> €</strong>
-            salaire le plus bas
-        </div>
-        <div class="stat-box">
-            <strong><?= number_format($sal_max, 0, ',', ' ') ?></strong>
-            salaire le plus haut
-        </div>
-        <div class="stat-box">
-            <strong><?= number_format($salaire_moyen, 0, ',', ' ') ?> €</strong>
-            salaire moyen (ouvertes)
-        </div>
-    </div>
-
-    <div style="display:flex; gap:20px;">
-        <div style="flex:1; background:white; padding:20px; border-radius:8px;">
-            <h3>Répartition par type de contrat</h3>
-            <table>
-                <tr><th>Type</th><th>Nombre</th></tr>
-                <?php foreach ($par_type as $type => $nb): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($type) ?></td>
-                        <td><?= $nb ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
-        <div style="flex:1; background:white; padding:20px; border-radius:8px;">
-            <h3>Répartition par ville</h3>
-            <table>
-                <tr><th>Ville</th><th>Nombre</th></tr>
-                <?php foreach ($par_ville as $ville => $nb): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($ville) ?></td>
-                        <td><?= $nb ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
-    </div>
-
-
-<?php elseif ($vue === 'candidatures'): ?>
-
-    <h2>Mes candidatures (session en cours)</h2>
-
-    <?php if (empty($historique)): ?>
-        <p>Vous n'avez pas encore envoyé de candidature durant cette session.</p>
-        <a class="btn" href="?vue=liste">Voir les offres</a>
-    <?php else: ?>
-        <table>
-            <tr>
-                <th>Nom</th>
-                <th>Email</th>
-                <th>Offre #</th>
-                <th>CV</th>
-                <th>Date</th>
-            </tr>
-            <?php foreach ($historique as $c): ?>
-                <tr>
-                    <td><?= htmlspecialchars($c['nom']) ?></td>
-                    <td><?= htmlspecialchars($c['email']) ?></td>
-                    <td><?= (int) $c['offre_id'] ?></td>
-                    <td><?= htmlspecialchars($c['cv'] ?? '—') ?></td>
-                    <td><?= htmlspecialchars($c['date']) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-    <?php endif; ?>
-
-<?php else: ?>
-
-    <p>Page introuvable. <a href="?vue=liste">Retour aux offres</a></p>
-
-<?php endif; ?>
-
-</main>
-</body>
-</html>

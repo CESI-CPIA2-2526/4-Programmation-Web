@@ -209,7 +209,6 @@ Lancer les tests :
 use PHPUnit\Framework\TestCase;
 
 class CalculatriceTest extends TestCase {
-
     public function test_additionner_deux_nombres(): void {
         // Arrange : préparer les données
         $calc = new Calculatrice();
@@ -230,11 +229,9 @@ class CalculatriceTest extends TestCase {
 
 ```php
 class Calculatrice {
-
     public function additionner(float $a, float $b): float {
         return $a + $b;
     }
-
     public function diviser(float $a, float $b): float {
         if ($b === 0.0) {
             throw new InvalidArgumentException("Division par zéro impossible.");
@@ -269,17 +266,14 @@ class Calculatrice {
 
 ```php
 class CalculatriceTest extends TestCase {
-
     public function test_diviser_par_zero_leve_une_exception(): void {
         $calc = new Calculatrice();
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Division par zéro impossible.");
         $calc->diviser(10, 0);
     }
-
     public function test_diviser_deux_nombres(): void {
-        $calc = new Calculatrice();
-        $resultat = $calc->diviser(10, 2);
+        $resultat = (new Calculatrice())->diviser(10, 2);
         $this->assertSame(5.0, $resultat);
     }
 }
@@ -297,12 +291,10 @@ Eviter de dupliquer les tests en fournissant plusieurs jeux de données.
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class CalculatriceTest extends TestCase {
-
     #[DataProvider('casAddition')]
     public function test_additionner(float $a, float $b, float $attendu): void {
         $this->assertSame($attendu, (new Calculatrice())->additionner($a, $b));
     }
-
     public static function casAddition(): array {
         return [
             'entiers positifs' => [3.0,  5.0,  8.0],
@@ -324,18 +316,14 @@ class CalculatriceTest extends TestCase {
 
 ```php
 class PanierTest extends TestCase {
-
     private Panier $panier;
-
     protected function setUp(): void {
         $this->panier = new Panier();
         $this->panier->ajouter(new Produit('Stylo', 1.50), 2);
     }
-
     public function test_total_initial(): void {
         $this->assertSame(3.0, $this->panier->total());
     }
-
     public function test_vider_le_panier(): void {
         $this->panier->vider();
         $this->assertCount(0, $this->panier->lignes());
@@ -354,9 +342,7 @@ Pour tester sans toucher à la vraie BDD, on utilise une base SQLite en mémoire
 
 ```php
 class ProduitModelTest extends TestCase {
-
     private ProduitModel $model;
-
     protected function setUp(): void {
         $pdo = new PDO('sqlite::memory:');
         $pdo->exec("CREATE TABLE produits (
@@ -365,12 +351,10 @@ class ProduitModelTest extends TestCase {
         )");
         $this->model = new ProduitModel($pdo);
     }
-
     public function test_create_retourne_un_id(): void {
         $id = $this->model->create('Crayon', 0.80, 50);
         $this->assertGreaterThan(0, $id);
     }
-
     public function test_find_by_id_retourne_le_produit(): void {
         $id = $this->model->create('Crayon', 0.80, 50);
         $produit = $this->model->findById($id);
@@ -387,17 +371,14 @@ Un **mock** remplace une dépendance réelle par un objet simulé.
 
 ```php
 class CommandeServiceTest extends TestCase {
-
     public function test_passer_commande_envoie_un_email(): void {
         $mailer = $this->createMock(MailerInterface::class);
-
         $mailer->expects($this->once())
                ->method('send')
                ->with(
                    $this->equalTo('client@example.com'),
                    $this->stringContains('Confirmation')
                );
-
         $service = new CommandeService($mailer);
         $service->passerCommande('client@example.com', []);
     }
