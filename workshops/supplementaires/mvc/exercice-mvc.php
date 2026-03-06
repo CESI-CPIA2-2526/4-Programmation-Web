@@ -29,7 +29,6 @@
 //  │   ├── candidatures.php            ← Historique des candidatures
 //  │   ├── stats.php                   ← Page de statistiques
 //  │   └── 404.php                     ← Page d'erreur
-//  └── uploads/                        ← Dossier pour les CV déposés
 
 // ============================================================
 
