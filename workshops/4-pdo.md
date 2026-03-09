@@ -1,175 +1,85 @@
-# Workshop 4 - PDO
+# Workshop PDO
 
-**Type :** Workshop — **Thème :** PDO, injections SQL, requêtes préparées, sessions et cookies
+> **Contrainte :** Utiliser PDO. Aidez-vous de la [documentation PDO sur PHP.net](https://www.php.net/manual/fr/book.pdo.php).
 
-**Votre mission :** Prendre en main PDO pour connecter une application PHP à une base de données, sécuriser les requêtes contre les injections SQL, puis explorer les différents mécanismes de passage de données entre pages.
+## Mise en place
 
-**Contrainte :** Utiliser PDO pour toutes les interactions avec la base de données. Appuyez-vous sur la [documentation PDO sur php.net](https://www.php.net/manual/en/book.pdo.php).
-
-**À produire :**
-
-| Exercice | Ce qu'on attend |
-|----------|-----------------|
-| 1 — Connexion | Connexion PDO fonctionnelle avec gestion d'erreur |
-| 2 — Requêtes | Lecture de données avec les 3 modes de récupération |
-| 3 — Injection SQL | Mise en évidence d'une injection et correction |
-| 4 — Passage de paramètres | `source.php` et `destination.php` avec 4 méthodes |
-| 5 — Requêtes préparées | Requête préparée + comparaison `bindParam` / `bindValue` |
-
----
-
-## Mise en place : Base de données
-
-Créez une base de données et exécutez le script SQL suivant (par exemple dans phpMyAdmin) :
+Créer une base de données et exécuter ce code SQL, par exemple dans phpMyAdmin :
 
 ```sql
 DROP TABLE IF EXISTS utilisateurs;
 
-CREATE TABLE utilisateurs (
-    id          INT          NOT NULL AUTO_INCREMENT,
-    pseudo      VARCHAR(30)  NOT NULL,
-    motDePasse  VARCHAR(30)  NOT NULL,
-    statutAdmin BOOLEAN      DEFAULT 0,
+CREATE TABLE utilisateurs(
+    id INT NOT NULL AUTO_INCREMENT,
+    pseudo VARCHAR(30) NOT NULL,
+    motDePasse VARCHAR(30) NOT NULL,
+    statutAdmin BOOLEAN DEFAULT 0,
     PRIMARY KEY (id)
 );
 
-INSERT INTO utilisateurs (pseudo, motDePasse, statutAdmin) VALUES
-    ('Gandalf', 'Maia',     1),
+INSERT INTO utilisateurs(pseudo, motDePasse, statutAdmin) VALUES
+    ('Gandalf', 'Maia', 1),
     ('Aragorn', 'Dunedain', 0),
     ('Legolas', 'Iluvatar', 0),
-    ('Gimli',   'Gloin',    0),
-    ('Frodo',   'ring',     0);
+    ('Gimli', 'Gloin', 0),
+    ('Frodo', 'ring', 0);
 ```
 
----
+## Exercices
 
-## Exercice 1 : Connexion PDO
+### 1. Connexion PDO
 
-Ouvrir une connexion à la base de données et gérer proprement les erreurs.
+- Ouvrir une connexion à la base de données. Vous aurez besoin au préalable de créer votre chaîne de connexion.
+- Que se passe-t-il si la connexion échoue (le serveur ne répond pas, ou l'identification échoue par exemple) ?
+- Gérer proprement ce cas d'erreur.
 
-### Étape 1 : Créer la chaîne de connexion
+### 2. Première requête avec `PDO::query`
 
-Construisez votre DSN (Data Source Name) et instanciez un objet `PDO` avec vos identifiants.
+Écrire une requête SQL permettant de vérifier si l'utilisateur `Gandalf` est présent dans la table `utilisateurs` et la mettre dans une variable PHP. Exécuter la requête à l'aide de la méthode `PDO::query`.
 
-### Étape 2 : Tester la connexion
+- Vérifier que la requête s'est bien passée, sinon afficher un message d'erreur et arrêter le programme.
+- Si la requête a bien fonctionné, afficher si l'utilisateur a été trouvé ou non dans la base.
 
-Que se passe-t-il si la connexion échoue (serveur injoignable, mauvais identifiants...) ?
+### 3. Récupérer un enregistrement sous 3 formes
 
-### Étape 3 : Gérer l'erreur proprement
+Sur le même modèle, écrire une requête permettant de récupérer tous les champs de l'utilisateur `Gandalf`. Afficher le `statutAdmin` de cette ligne de 3 façons différentes, en récupérant le contenu de l'enregistrement sous forme :
 
-Interceptez l'exception et affichez un message d'erreur clair à l'utilisateur sans exposer les détails techniques.
+- D'un **tableau simple** (index)
+- D'un **dictionnaire** (tableau associatif)
+- D'un **objet anonyme**
 
----
+> **Remarque :** on pourra utiliser des commentaires de code pour n'exécuter qu'une seule méthode à la fois, sans quoi plusieurs `fetch()` successifs vont modifier le comportement.
 
-## Exercice 2 : Exécuter des requêtes et récupérer des données
+### 4. Récupérer plusieurs enregistrements
 
-Interroger la base et récupérer des résultats sous différentes formes.
+Écrire une requête permettant de récupérer tous les pseudos de la table `utilisateurs`. Faire une boucle `foreach` pour les afficher.
 
-### Étape 1 : Vérifier la présence d'un utilisateur
+### 5. Injections SQL
 
-Écrivez une requête SQL vérifiant si l'utilisateur `Gandalf` est présent dans la table, en utilisant `PDO::query`. Vérifiez que la requête s'est bien exécutée, affichez un message d'erreur sinon. Affichez ensuite si l'utilisateur a été trouvé ou non.
+Créer une requête permettant de gérer la connexion d'un utilisateur au site, en vérifiant son login et son mot de passe, à partir d'un pseudo et d'un mot de passe contenus dans les variables PHP `$pseudo` et `$mdp`.
 
-### Étape 2 : Récupérer tous les champs d'un utilisateur
+- Nous allons maintenant simuler la saisie de données inconnues. On peut virtuellement avoir n'importe quoi dans `$pseudo` et `$mdp`. Quels sont les risques à prendre en compte dans la construction de la requête ?
+- Imaginez des valeurs de pseudo pouvant poser problème.
+- Faites une injection SQL dans la requête de connexion.
 
-Sur le même modèle, récupérez tous les champs de l'utilisateur `Gandalf`. Affichez son `statutAdmin` de **3 façons différentes** :
+### 6. Passage de paramètres entre pages PHP
 
-| Mode | Méthode PDO |
-|------|-------------|
-| Tableau indexé | `PDO::FETCH_NUM` |
-| Tableau associatif | `PDO::FETCH_ASSOC` |
-| Objet anonyme | `PDO::FETCH_OBJ` |
+Pour comprendre différentes méthodes de transfert de données entre deux pages PHP, réalisez les étapes suivantes :
 
-> **Remarque :** utilisez des commentaires pour n'activer qu'une seule méthode à la fois. Plusieurs `fetch()` successifs sur le même résultat modifient le comportement.
+1. Créez une première page `source.php` incluant une variable `$param = 'SECRET';`.
+2. Identifiez 4 méthodes de passage de paramètre à une autre page (`destination.php`) : **GET**, **POST**, **SESSION**, **COOKIE**.
+3. Pour chaque méthode, créez un lien ou un formulaire permettant de transmettre `$param` à `destination.php`.
+4. Dans `destination.php`, récupérez et affichez la valeur transmise pour vérifier que le paramètre est bien reçu.
+5. Testez avec des caractères spéciaux et des valeurs contenant des espaces ou des symboles.
+6. Discutez des différences et des cas où certaines méthodes sont préférables (ex. : GET pour URLs, POST pour formulaires, SESSION pour données persistantes côté serveur, COOKIE pour stocker côté client).
 
-### Étape 3 : Récupérer tous les pseudos
+### 7. Requêtes préparées
 
-Écrivez une requête récupérant tous les pseudos de la table. Utilisez une boucle `foreach` pour les afficher.
+- Comment gérer le problème des injections SQL ?
+- Quel est l'intérêt d'une requête préparée ?
+- À l'aide de `PDOStatement::prepare`, créer une requête préparée permettant de retourner un utilisateur en fonction de son pseudo.
 
----
+Il existe deux moyens de lier les paramètres aux requêtes préparées : avec les méthodes `PDOStatement::bindParam` et `PDOStatement::bindValue`.
 
-## Exercice 3 : Authentification et injection SQL
-
-Construire une requête de connexion, puis comprendre et reproduire une injection SQL.
-
-### Étape 1 : Requête de connexion
-
-Créez une requête vérifiant le login et le mot de passe d'un utilisateur à partir des variables PHP `$pseudo` et `$mdp`.
-
-### Étape 2 : Simuler des saisies inconnues
-
-`$pseudo` et `$mdp` peuvent contenir n'importe quoi. Quels sont les risques dans la construction de la requête ?
-
-- Imaginez des valeurs de `$pseudo` qui pourraient poser problème.
-- Faites une injection SQL dans la requête de connexion pour valider votre hypothèse.
-
-### Étape 3 : Identifier la solution
-
-Comment faut-il gérer ce problème ? Quel est l'intérêt des requêtes préparées ?
-
----
-
-## Exercice 4 : Passage de paramètres entre pages
-
-Comprendre les 4 méthodes de transmission de données entre pages PHP.
-
-### Étape 1 : Créer `source.php`
-
-Créez une page `source.php` contenant une variable `$param = 'SECRET';`.
-
-### Étape 2 : Implémenter les 4 méthodes
-
-Pour chaque méthode, créez un lien ou un formulaire transmettant `$param` à `destination.php` :
-
-| Méthode | Mécanisme |
-|---------|-----------|
-| GET | Paramètre dans l'URL (`?param=...`) |
-| POST | Formulaire avec `method="post"` |
-| SESSION | Stockage côté serveur avec `$_SESSION` |
-| COOKIE | Stockage côté client avec `setcookie()` |
-
-### Étape 3 : Créer `destination.php`
-
-Récupérez et affichez la valeur transmise pour chaque méthode. Testez avec des caractères spéciaux, des espaces et des symboles.
-
-### Étape 4 : Analyse
-
-Discutez des différences entre les méthodes et des cas où chacune est préférable :
-
-| Méthode | Cas d'usage typique |
-|---------|---------------------|
-| GET | Liens partageables, filtres, pagination |
-| POST | Formulaires, données sensibles |
-| SESSION | Données persistantes côté serveur (panier, utilisateur connecté) |
-| COOKIE | Préférences utilisateur, connexion "se souvenir de moi" |
-
----
-
-## Exercice 5 : Requêtes préparées
-
-Sécuriser les requêtes avec `PDOStatement::prepare` et comprendre la différence entre `bindParam` et `bindValue`.
-
-### Étape 1 : Créer une requête préparée
-
-À l'aide de `PDOStatement::prepare`, créez une requête préparée retournant un utilisateur en fonction de son pseudo.
-
-### Étape 2 : Comparer `bindParam` et `bindValue`
-
-Il existe deux méthodes pour lier des paramètres à une requête préparée :
-
-| Méthode | Comportement |
-|---------|-------------|
-| `bindParam()` | Lie la variable **par référence** — la valeur est lue au moment de l'exécution |
-| `bindValue()` | Lie la valeur **par copie** — la valeur est capturée au moment de la liaison |
-
-Écrivez un code mettant en évidence cette différence de comportement (par exemple en modifiant la variable entre la liaison et l'exécution).
-
----
-
-## Critères de validation
-
-| Critère | Description |
-|---------|-------------|
-| Fonctionnel | Le code fonctionne sans erreur et les données s'affichent correctement |
-| Sécurité | Les requêtes utilisent des requêtes préparées, les erreurs ne fuient pas d'informations |
-| Clarté | Code lisible et structuré |
-| Compréhension | Les questions ouvertes (injection, bindParam/bindValue) sont répondues en commentaire |
+- Quelle est la différence entre les deux méthodes ?
+- Écrire un code mettant en évidence cette différence de comportement.
