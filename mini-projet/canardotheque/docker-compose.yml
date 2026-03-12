@@ -1,8 +1,8 @@
 services:
 
-  # Serveur web PHP + Apache
+  # Serveur web PHP + Apache (construit depuis le Dockerfile local)
   app:
-    image: php:8.2-apache
+    build: .
     ports:
       - "8080:80"                      # accès via http://localhost:8080
     volumes:
