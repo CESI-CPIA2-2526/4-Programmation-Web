@@ -12,7 +12,7 @@ Le grand maître de guilde a besoin d'une application web intranet simple pour c
 
 ## 1. Spécifications Fonctionnelles
 
-### A. Gestion des membres — Les Aventuriers
+### A. Gestion des membres - Les Aventuriers
 
 - Consulter la **liste complète** des membres (pseudo, classe, email).
 - **Inscrire** un nouvel aventurier en renseignant :
@@ -20,20 +20,20 @@ Le grand maître de guilde a besoin d'une application web intranet simple pour c
   - Sa classe parmi : `Guerrier`, `Mage`, `Rôdeur`, `Clerc`, `Barde`
   - Son adresse email
 
-### B. Gestion des sondages — Les Quêtes à Décider
+### B. Gestion des sondages - Les Quêtes à Décider
 
 - Consulter la **liste de tous les sondages** avec leur statut, affichés sous forme de **cartes**.
 - **Créer** un nouveau sondage en renseignant :
   - Un titre (ex : *"Quel scénario pour la session du 15 ?"*)
   - Une description optionnelle
   - Une date de clôture
-  - Au moins **deux options** de réponse — les champs sont ajoutés **dynamiquement** via un bouton "Ajouter une option" (voir section JavaScript)
+  - Au moins **deux options** de réponse - les champs sont ajoutés **dynamiquement** via un bouton "Ajouter une option" (voir section JavaScript)
 - **Clôturer** un sondage manuellement depuis la liste, avec une **demande de confirmation** avant l'action.
 - Les statuts possibles d'un sondage sont **strictement limités** à :
   - `Ouvert` *(les membres peuvent voter)*
   - `Clôturé` *(plus aucun vote accepté, résultats visibles)*
 
-### C. Gestion des votes — Le Conseil
+### C. Gestion des votes - Le Conseil
 
 - Sur la page d'un sondage `Ouvert`, un aventurier choisit son pseudo dans une liste déroulante et sélectionne **une option**.
 - **Règle métier obligatoire :** un aventurier ne peut voter **qu'une seule fois par sondage**. Toute tentative de second vote doit être rejetée avec un message explicite.
@@ -41,7 +41,7 @@ Le grand maître de guilde a besoin d'une application web intranet simple pour c
 
 ---
 
-## 2. Modélisation — MCD
+## 2. Modélisation - MCD
 
 **C'est la première étape, obligatoire avant tout code.**
 
@@ -69,7 +69,7 @@ AVENTURIER --(0,n)-- VOTER --(0,n)-- OPTION --(1,1)-- SONDAGE
 | **OPTION** | identifiant (auto), libelle |
 | **VOTE** | (relation porteuse) date du vote |
 
-> **Point d'attention :** Un aventurier peut voter pour des options de sondages différents (`0,n`). Une option peut recevoir les votes de plusieurs aventuriers (`0,n`). La relation VOTER devient donc une **table associative**. La contrainte "un seul vote par sondage" ne peut pas s'exprimer directement dans le MCD — elle sera portée par la base de données et vérifiée côté PHP (voir section Technique).
+> **Point d'attention :** Un aventurier peut voter pour des options de sondages différents (`0,n`). Une option peut recevoir les votes de plusieurs aventuriers (`0,n`). La relation VOTER devient donc une **table associative**. La contrainte "un seul vote par sondage" ne peut pas s'exprimer directement dans le MCD - elle sera portée par la base de données et vérifiée côté PHP (voir section Technique).
 
 ### Du MCD au MLD
 
@@ -91,7 +91,7 @@ Le passage MCD → MLD suit des règles mécaniques :
 
 **Exemple de bonne pratique pour la contrainte métier :**
 
-La règle "un seul vote par sondage par aventurier" ne peut pas se réduire à une clé primaire sur `(pseudo, id_option)` — un aventurier ne devrait pas pouvoir voter pour deux options du même sondage. Il faut la vérifier **côté PHP** avant d'insérer, avec une requête `SELECT COUNT(*)`.
+La règle "un seul vote par sondage par aventurier" ne peut pas se réduire à une clé primaire sur `(pseudo, id_option)` - un aventurier ne devrait pas pouvoir voter pour deux options du même sondage. Il faut la vérifier **côté PHP** avant d'insérer, avec une requête `SELECT COUNT(*)`.
 
 ```sql
 -- Table associative vote
@@ -180,7 +180,7 @@ Le formulaire de création d'un sondage doit permettre d'ajouter ou de supprimer
 - Les champs doivent être nommés `options[]` pour que PHP les reçoive comme un tableau dans `$_POST`.
 
 ```javascript
-// Exemple de logique attendue — à implémenter à votre manière
+// Exemple de logique attendue - à implémenter à votre manière
 document.getElementById('btn-ajouter-option').addEventListener('click', () => {
     // créer un <div> contenant un <input name="options[]"> et un bouton supprimer
     // l'ajouter au conteneur
@@ -216,7 +216,7 @@ Les données sont **injectées par PHP** dans la vue sous forme de JSON, puis lu
 
 ```php
 <?php
-// Dans resultats.php — le contrôleur a passé $resultats à la vue
+// Dans resultats.php - le contrôleur a passé $resultats à la vue
 $labels  = array_column($resultats, 'libelle');
 $valeurs = array_column($resultats, 'nb_votes');
 ?>
@@ -238,7 +238,7 @@ $valeurs = array_column($resultats, 'nb_votes');
 </script>
 ```
 
-> PHP génère du HTML contenant des données JSON figées au moment du rendu. JavaScript les lit au chargement. Il n'y a pas de requête réseau côté client — c'est différent d'une API ou d'un `fetch()`.
+> PHP génère du HTML contenant des données JSON figées au moment du rendu. JavaScript les lit au chargement. Il n'y a pas de requête réseau côté client - c'est différent d'une API ou d'un `fetch()`.
 
 ### F. Sécurité
 
@@ -254,14 +254,14 @@ $valeurs = array_column($resultats, 'nb_votes');
 
 Ne démarrez pas par le code. Voici l'ordre de travail à respecter :
 
-1. **MCD** — Identifiez vos entités, attributs, relations et cardinalités.
-2. **MLD** — Traduisez en tables avec clés primaires, étrangères et contraintes.
-3. **`database.sql`** — Rédigez et testez votre script. Insérez un jeu de données de test (2-3 aventuriers, 1-2 sondages avec options).
-4. **`config/db.php`** — Vérifiez que la connexion PDO fonctionne.
-5. **Layout** — Créez `header.php` et `footer.php` avec la navigation et le lien vers `style.css`. Posez les bases du CSS.
-6. **CRUD Aventuriers** — Liste + ajout.
-7. **CRUD Sondages** — Liste en cartes + création avec le formulaire dynamique JS + clôture avec confirmation.
-8. **Vote** — Formulaire de vote avec vérification du doublon + INSERT.
-9. **Résultats** — Requête d'agrégation SQL + graphique Chart.js.
-10. **Sécurité** — Auditez chaque requête (préparée ?) et chaque affichage (`htmlspecialchars()` ?).
-11. **Dépôt GitHub** — Initialisez votre dépôt, commitez au fur et à mesure, poussez avant la fin de journée.
+1. **MCD** - Identifiez vos entités, attributs, relations et cardinalités.
+2. **MLD** - Traduisez en tables avec clés primaires, étrangères et contraintes.
+3. **`database.sql`** - Rédigez et testez votre script. Insérez un jeu de données de test (2-3 aventuriers, 1-2 sondages avec options).
+4. **`config/db.php`** - Vérifiez que la connexion PDO fonctionne.
+5. **Layout** - Créez `header.php` et `footer.php` avec la navigation et le lien vers `style.css`. Posez les bases du CSS.
+6. **CRUD Aventuriers** - Liste + ajout.
+7. **CRUD Sondages** - Liste en cartes + création avec le formulaire dynamique JS + clôture avec confirmation.
+8. **Vote** - Formulaire de vote avec vérification du doublon + INSERT.
+9. **Résultats** - Requête d'agrégation SQL + graphique Chart.js.
+10. **Sécurité** - Auditez chaque requête (préparée ?) et chaque affichage (`htmlspecialchars()` ?).
+11. **Dépôt GitHub** - Initialisez votre dépôt, commitez au fur et à mesure, poussez avant la fin de journée.
