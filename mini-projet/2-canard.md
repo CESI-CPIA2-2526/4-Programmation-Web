@@ -12,7 +12,7 @@ L'association étudiante **"Club Coin-Coin"** met à disposition de ses membres 
 
 ## 1. Spécifications Fonctionnelles
 
-### A. Gestion du cheptel — Les Canards
+### A. Gestion du cheptel - Les Canards
 
 - Consulter la **liste complète** des canards (nom, type, état).
 - **Ajouter** un nouveau canard en renseignant :
@@ -24,7 +24,7 @@ L'association étudiante **"Club Coin-Coin"** met à disposition de ses membres 
   - `En vadrouille` *(actuellement emprunté)*
   - `En nettoyage` *(indisponible temporairement)*
 
-### B. Gestion des emprunteurs — Les Étudiants
+### B. Gestion des emprunteurs - Les Étudiants
 
 - Consulter la **liste des étudiants** inscrits au service.
 - **Enregistrer** un nouvel étudiant en renseignant :
@@ -32,7 +32,7 @@ L'association étudiante **"Club Coin-Coin"** met à disposition de ses membres 
   - Son nom et prénom
   - Son adresse email universitaire
 
-### C. Gestion des emprunts — Les Adoptions Temporaires
+### C. Gestion des emprunts - Les Adoptions Temporaires
 
 - Depuis la liste des canards, un bouton **"Adopter"** doit apparaître **uniquement** pour les canards dont l'état est `Dans la mare`.
 - L'action d'emprunt associe un canard à un étudiant inscrit en précisant :
@@ -42,7 +42,7 @@ L'association étudiante **"Club Coin-Coin"** met à disposition de ses membres 
 
 ---
 
-## 2. Modélisation — MCD
+## 2. Modélisation - MCD
 
 **C'est la première étape, obligatoire avant tout code.**
 
@@ -55,7 +55,7 @@ Vous devez produire un **Modèle Conceptuel de Données (MCD)** complet représe
 Un MCD se compose d'**entités** (rectangles), de **relations** (ellipses ou losanges), et de **cardinalités** (annotations sur les pattes).
 
 ```text
-ETUDIANT ——(0,n)—— EMPRUNTER ——(0,1)—— CANARD
+ETUDIANT --(0,n)-- EMPRUNTER --(0,1)-- CANARD
                        |
                    date_pret
                    date_retour
@@ -77,7 +77,7 @@ ETUDIANT ——(0,n)—— EMPRUNTER ——(0,1)—— CANARD
 | **ETUDIANT** | num_carte (identifiant saisi), nom, prenom, email |
 | **EMPRUNT** | (relation porteuse) date_pret, date_retour_prevue |
 
-> **Point d'attention :** Un même canard ne peut être emprunté qu'une seule fois à la fois (`0,1`). Un étudiant peut avoir plusieurs emprunts successifs (`0,n`). La relation EMPRUNT porte les dates — elle devient une **table à part entière** dans le MLD.
+> **Point d'attention :** Un même canard ne peut être emprunté qu'une seule fois à la fois (`0,1`). Un étudiant peut avoir plusieurs emprunts successifs (`0,n`). La relation EMPRUNT porte les dates - elle devient une **table à part entière** dans le MLD.
 
 ### Du MCD au MLD
 
@@ -163,72 +163,12 @@ try {
 
 Ne démarrez pas par le code. Voici l'ordre de travail à respecter :
 
-1. **MCD** — Identifiez vos entités, attributs et relations. Annotez les cardinalités.
-2. **MLD** — Traduisez le MCD en tables avec clés primaires et étrangères.
-3. **`database.sql`** — Rédigez et testez votre script de création. Insérez le jeu de données.
-4. **`config/db.php`** — Vérifiez que la connexion PDO fonctionne.
-5. **CRUD Canards** — Listez les canards (SELECT), puis ajoutez-en un (INSERT via formulaire).
-6. **CRUD Étudiants** — Même logique.
-7. **Emprunts** — Formulaire d'emprunt → INSERT dans `emprunt` + UPDATE du statut du canard.
-8. **Sécurité** — Auditez chaque requête (préparée ?) et chaque affichage (`htmlspecialchars()` ?).
-9. **Dépôt GitHub** — Initialisez votre dépôt, commitez au fur et à mesure, poussez avant la fin de journée.
-
----
-
-## 5. Rendu — Dépôt GitHub
-
-**Le rendu se fait exclusivement via un dépôt GitHub public**, à soumettre avant la fin de journée.
-
-### Ce que doit contenir le dépôt
-
-```text
-canardotheque/              ← Racine du dépôt
-├── config/
-│   └── db.php              ← Connexion PDO
-├── models/
-│   ├── Canard.php          ← Requêtes SQL liées aux canards (SELECT, INSERT...)
-│   ├── Etudiant.php        ← Requêtes SQL liées aux étudiants
-│   └── Emprunt.php         ← Requêtes SQL liées aux emprunts + UPDATE statut
-├── views/
-│   ├── canards/
-│   │   ├── liste.php       ← Affichage HTML de la liste des canards
-│   │   └── ajouter.php     ← Formulaire d'ajout
-│   ├── etudiants/
-│   │   ├── liste.php
-│   │   └── ajouter.php
-│   └── emprunts/
-│       └── creer.php       ← Formulaire d'emprunt
-├── controllers/
-│   ├── CanardController.php
-│   ├── EtudiantController.php
-│   └── EmpruntController.php
-├── index.php               ← Point d'entrée, routing minimal
-├── database.sql            ← Obligatoire
-├── mcd.png                 ← ou mcd.pdf — Obligatoire
-└── README.md               ← Voir consignes ci-dessous
-```
-
-**Rôle de chaque couche :**
-
-| Couche | Rôle | Contient |
-| --- | --- | --- |
-| **Model** | Accès aux données | Les requêtes PDO (SELECT, INSERT, UPDATE) |
-| **View** | Affichage | Le HTML + `htmlspecialchars()` sur les données affichées |
-| **Controller** | Logique | Réception de `$_POST`, appel du modèle, redirection vers la vue |
-
-### Le fichier `README.md`
-
-Votre dépôt doit contenir un `README.md` à la racine avec :
-
-1. **Votre nom et prénom**
-2. **Comment lancer le projet** : nom de la base à créer, comment importer `database.sql`, URL d'accès local
-3. **Ce qui fonctionne** : listez les fonctionnalités implémentées
-4. **Ce qui ne fonctionne pas** (le cas échéant) : soyez honnête, c'est apprécié
-
-### Consignes Git
-
-- Faites **plusieurs commits** au fil de votre travail — un seul commit final "tout en vrac" sera pénalisé.
-- Le message de chaque commit doit être explicite : `Ajout liste canards`, `Règle métier emprunt`, etc.
-- **N'incluez pas** vos identifiants de base de données dans `db.php` si ce ne sont pas les valeurs par défaut.
-
-> **Heure limite de rendu :** fin de journée. Tout push après cette heure ne sera pas pris en compte.
+1. **MCD** - Identifiez vos entités, attributs et relations. Annotez les cardinalités.
+2. **MLD** - Traduisez le MCD en tables avec clés primaires et étrangères.
+3. **`database.sql`** - Rédigez et testez votre script de création. Insérez le jeu de données.
+4. **`config/db.php`** - Vérifiez que la connexion PDO fonctionne.
+5. **CRUD Canards** - Listez les canards (SELECT), puis ajoutez-en un (INSERT via formulaire).
+6. **CRUD Étudiants** - Même logique.
+7. **Emprunts** - Formulaire d'emprunt → INSERT dans `emprunt` + UPDATE du statut du canard.
+8. **Sécurité** - Auditez chaque requête (préparée ?) et chaque affichage (`htmlspecialchars()` ?).
+9. **Dépôt GitHub** - Initialisez votre dépôt, commitez au fur et à mesure, poussez avant la fin de journée.
