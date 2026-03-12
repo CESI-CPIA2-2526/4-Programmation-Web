@@ -21,6 +21,8 @@ class EtudiantController
         $erreur = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            // trim() sur chaque champ texte pour éviter les valeurs composées uniquement d'espaces.
             $num_carte = trim($_POST['num_carte'] ?? '');
             $nom       = trim($_POST['nom']       ?? '');
             $prenom    = trim($_POST['prenom']    ?? '');
@@ -34,6 +36,9 @@ class EtudiantController
                     header('Location: index.php?page=etudiants');
                     exit;
                 } catch (PDOException $e) {
+                    // Si num_carte ou email viole une contrainte UNIQUE ou PRIMARY KEY,
+                    // PDO lève une exception qu'on intercepte ici pour afficher un message clair.
+                    // On ne ré-affiche pas $e->getMessage() : il peut contenir des infos sensibles.
                     $erreur = 'Ce numéro de carte ou cet email est déjà utilisé.';
                 }
             }

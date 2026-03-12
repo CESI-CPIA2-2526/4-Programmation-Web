@@ -1,0 +1,32 @@
+services:
+
+  # Serveur web PHP + Apache
+  app:
+    image: php:8.2-apache
+    ports:
+      - "8080:80"                      # accès via http://localhost:8080
+    volumes:
+      - .:/var/www/html                # monte le dossier courant dans Apache
+    depends_on:
+      - db
+    environment:
+      # Ces variables sont lues dans config/db.php (voir ci-dessous)
+      DB_HOST: db
+      DB_NAME: canardotheque
+      DB_USER: canard
+      DB_PASS: canard
+
+  # Base de données MySQL
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: canardotheque
+      MYSQL_USER: canard
+      MYSQL_PASSWORD: canard
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql  # importé au 1er démarrage
+      - db_data:/var/lib/mysql          # persistance des données entre les redémarrages
+
+volumes:
+  db_data:

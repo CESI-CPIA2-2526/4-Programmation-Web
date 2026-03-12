@@ -11,12 +11,16 @@ class Etudiant
         $this->pdo = $pdo;
     }
 
+    // Retourne tous les étudiants triés par nom puis prénom.
     public function getAll(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM etudiant ORDER BY nom, prenom');
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Insère un nouvel étudiant.
+    // Si num_carte ou email viole une contrainte UNIQUE/PRIMARY KEY,
+    // PDO lève une PDOException que le contrôleur se charge d'intercepter.
     public function ajouter(string $num_carte, string $nom, string $prenom, string $email): void
     {
         $stmt = $this->pdo->prepare(

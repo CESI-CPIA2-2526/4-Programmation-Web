@@ -21,15 +21,32 @@
 
 <h1>Ajouter un canard</h1>
 
+<?php
+// $erreur est transmise par le contrôleur. Elle vaut '' si tout va bien,
+// ou un message si la validation a échoué.
+?>
 <?php if ($erreur): ?>
     <p class="erreur"><?= htmlspecialchars($erreur) ?></p>
 <?php endif; ?>
 
+<?php
+// Sans action="...", le formulaire soumet vers la même URL que la page actuelle.
+// Le contrôleur détecte la soumission via $_SERVER['REQUEST_METHOD'] === 'POST'.
+?>
 <form method="post">
     <label for="nom">Petit nom</label>
+    <?php
+    // On re-remplit le champ avec la valeur soumise si le formulaire est en erreur.
+    // Sans ça, l'utilisateur perdrait sa saisie à chaque tentative ratée.
+    // htmlspecialchars est obligatoire ici aussi : $_POST vient du client.
+    ?>
     <input type="text" id="nom" name="nom" required value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>">
 
     <label for="type">Type</label>
+    <?php
+    // Le <select> limite les valeurs côté interface, mais seul le serveur
+    // (et la contrainte ENUM en base) garantit vraiment les valeurs acceptées.
+    ?>
     <select id="type" name="type" required>
         <option value="">-- Choisir --</option>
         <option value="Plastique">Plastique</option>
@@ -38,6 +55,9 @@
     </select>
 
     <label for="etat">État initial</label>
+    <?php
+    // "En vadrouille" n'est pas proposé : un canard ne peut pas être créé déjà emprunté.
+    ?>
     <select id="etat" name="etat">
         <option value="Dans la mare">Dans la mare</option>
         <option value="En nettoyage">En nettoyage</option>

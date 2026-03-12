@@ -32,6 +32,10 @@
         </tr>
     </thead>
     <tbody>
+        <?php
+        // $etudiants est un tableau de tableaux associatifs transmis par le contrôleur.
+        // La vue ne fait qu'itérer et afficher : aucune logique métier ici.
+        ?>
         <?php foreach ($etudiants as $etudiant): ?>
         <tr>
             <td><?= htmlspecialchars($etudiant['num_carte']) ?></td>

@@ -35,12 +35,26 @@
     <tbody>
         <?php foreach ($canards as $canard): ?>
         <tr>
+            <?php
+            // htmlspecialchars() convertit les caractères spéciaux HTML (<, >, ", &)
+            // en entités HTML. Cela empêche l'injection de code dans la page (faille XSS).
+            // À appliquer sur toute donnée issue de la base ou d'un formulaire.
+            ?>
             <td><?= htmlspecialchars($canard['id']) ?></td>
             <td><?= htmlspecialchars($canard['nom']) ?></td>
             <td><?= htmlspecialchars($canard['type']) ?></td>
             <td><?= htmlspecialchars($canard['etat']) ?></td>
             <td>
+                <?php
+                // Règle métier : le bouton "Adopter" n'apparaît que si le canard est disponible.
+                // Cette vérification côté vue est visuelle ; le contrôleur la re-vérifie
+                // côté serveur pour éviter toute manipulation de l'URL.
+                ?>
                 <?php if ($canard['etat'] === 'Dans la mare'): ?>
+                    <?php
+                    // L'id n'est pas échappé par htmlspecialchars car c'est un entier,
+                    // mais on aurait pu le faire sans risque.
+                    ?>
                     <a class="btn" href="index.php?page=emprunts&canard_id=<?= $canard['id'] ?>">Adopter</a>
                 <?php endif; ?>
             </td>
